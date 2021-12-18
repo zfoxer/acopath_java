@@ -3,13 +3,13 @@ package acoserve;
 
 import java.util.Vector;
 import java.util.Map;
-//import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.TreeMap;
 
 
-public class AntSystem {
+public class AntSystem
+{
     public static final int ANTS = 30;
     public static final int ITERATIONS = 10;
     public static final int PHERO_QNT = 100;
@@ -20,22 +20,27 @@ public class AntSystem {
     private int nodeCount;
     private Map<Integer, Integer> edges = new TreeMap<>();
 
-    public AntSystem() {
-        try {
+    public AntSystem()
+    {
+        try
+        {
             init();
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             System.out.println(e.getMessage());
         }
     }
 
-    private double[][] createPheroTopo() {
+    private double[][] createPheroTopo()
+    {
         double[][] edge2phero = new double[nodeCount][nodeCount];
         for (int i = 0; i < nodeCount; ++i)
             for (int j = 0; j < nodeCount; ++j)
                 edge2phero[i][j] = -1;
 
         Set<Integer> strNodes = edges.keySet();
-        for (Integer strNode : strNodes) {
+        for (Integer strNode : strNodes)
+        {
             Integer endNode = edges.get(strNode);
             edge2phero[strNode - 1][endNode - 1] = PHERO_QNT;
         }
@@ -43,15 +48,18 @@ public class AntSystem {
         return edge2phero;
     }
 
-    public Vector<Integer> path(int src, int dest) {
+    public Vector<Integer> path(int src, int dest)
+    {
         Map<Vector<Integer>, Double> evalPaths = new TreeMap<>();
         double[][] edge2phero = createPheroTopo();
 
         int i = 0;
-        while (i++ < ITERATIONS) {
+        while (i++ < ITERATIONS)
+        {
             evalPaths.clear();
             int ant = 1;
-            while (ant++ <= ANTS) {
+            while (ant++ <= ANTS)
+            {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
                 double length = tourLength(tour);
                 evalPaths.put(tour, length);
@@ -62,12 +70,14 @@ public class AntSystem {
         return bestPath();
     }
 
-    private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero) {
+    private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero)
+    {
         Vector<Integer> trace = new Vector<>();
         int srcTemp = src;
         final int destTemp = dest;
 
-        while (srcTemp != destTemp) {
+        while (srcTemp != destTemp)
+        {
             Set<Integer> neighs = availNeighbours(srcTemp, edge2phero);
             int neighbour = pickUpNeighbour(neighs, edge2phero);
             if (neighbour == NO_NEIGHBOUR)
@@ -83,11 +93,13 @@ public class AntSystem {
         return trace.firstElement() == src && trace.lastElement() == dest ? trace : new Vector<Integer>();
     }
 
-    private Integer pickUpNeighbour(Set<Integer> neighs, double[][] edge2phero) {
+    private Integer pickUpNeighbour(Set<Integer> neighs, double[][] edge2phero)
+    {
         return null;
     }
 
-    private void init() {
+    private void init()
+    {
         //  TODO: Use parsed value
         nodeCount = 0;
 
@@ -95,10 +107,12 @@ public class AntSystem {
         return;
     }
 
-    private Set<Integer> availNeighbours(int node, double[][] edge2phero) {
+    private Set<Integer> availNeighbours(int node, double[][] edge2phero)
+    {
         Set<Integer> neighbours = new TreeSet<Integer>();
 
-        for (int i = 0; i < edge2phero[node - 1].length; ++i) {
+        for (int i = 0; i < edge2phero[node - 1].length; ++i)
+        {
             if (edge2phero[node - 1][i] >= 0)
                 if (i + 1 != node)
                     neighbours.add(i + 1);
@@ -107,7 +121,8 @@ public class AntSystem {
         return neighbours;
     }
 
-    private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException {
+    private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
+    {
         double num = Math.pow(phero(i, j, edge2phero), A)
                 * Math.pow(heuInfo(i, j, edge2phero), B);
 
@@ -123,26 +138,38 @@ public class AntSystem {
         return num / denum;
     }
 
-    private double heuInfo(int i, int j, double[][] edge2phero) {
+    private double heuInfo(int i, int j, double[][] edge2phero)
+    {
         //  TODO: Correlate with assets and resources, not pheromone
 
         return 1 / edge2phero[i][j];
     }
 
-    private double phero(int i, int j, double[][] edge2phero) {
-        //  Useless
+    private double phero(int i, int j, double[][] edge2phero)
+    {
+        //  TODO: Remove - Useless
+
         return edge2phero[i][j];
     }
 
-    private double tourLength(Vector<Integer> path) {
+    private double tourLength(Vector<Integer> path)
+    {
+        //  TODO: Calculate Lk
+
         return (double) path.size();
     }
 
-    private void updateTrails(Map<Vector<Integer>, Double> trails) {
+    private void updateTrails(Map<Vector<Integer>, Double> trails)
+    {
+        //  TODO
+
         return;
     }
 
-    Vector<Integer> bestPath() {
+    Vector<Integer> bestPath()
+    {
+        //  TODO: Choose the return path
+
         return null;
     }
 }
