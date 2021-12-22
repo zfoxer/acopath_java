@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.TreeMap;
 
-
 public class AntSystem
 {
     public static final int ANTS = 30;
@@ -25,7 +24,8 @@ public class AntSystem
         try
         {
             init();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
@@ -78,8 +78,7 @@ public class AntSystem
 
         while (srcTemp != destTemp)
         {
-            Set<Integer> neighs = availNeighbours(srcTemp, edge2phero);
-            int neighbour = pickUpNeighbour(neighs, edge2phero);
+            int neighbour = pickUpNeighbour(srcTemp, edge2phero);
             if (neighbour == NO_NEIGHBOUR)
                 break;  //  Dead end
             if (!trace.contains(neighbour))
@@ -93,46 +92,62 @@ public class AntSystem
         return trace.firstElement() == src && trace.lastElement() == dest ? trace : new Vector<Integer>();
     }
 
-    private Integer pickUpNeighbour(Set<Integer> neighs, double[][] edge2phero)
+    private Integer pickUpNeighbour(int src, double[][] edge2phero)
     {
-        return null;
+        Vector<Integer> neighs = availNeighbours(src, edge2phero);
+        double probs[] = new double[neighs.size()];
+        int index = 0;
+        // Produce a transition probability to each one
+        for(int neigh : neighs)
+            probs[index++] = prob(src, neigh, edge2phero);
+
+        double value = Math.random();
+        // Sort probabilities in range [0, 1] and use a uniform distro to
+        // pick up an index domain
+        index = 0; double sum = 0;
+        for(; index < neighs.size(); ++index)
+        {
+            sum += probs[index];
+            if(value <= sum)
+                break;
+        }
+
+        return neighs.size() > 0 ? neighs.elementAt(index) : NO_NEIGHBOUR;
     }
 
     private void init()
     {
-        //  TODO: Use parsed value
+        //  TODO: Use parsed values
         nodeCount = 0;
 
 
         return;
     }
 
-    private Set<Integer> availNeighbours(int node, double[][] edge2phero)
+    private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
     {
-        Set<Integer> neighbours = new TreeSet<Integer>();
+        Vector<Integer> neighbours = new Vector<Integer>();
 
         for (int i = 0; i < edge2phero[node - 1].length; ++i)
-        {
             if (edge2phero[node - 1][i] >= 0)
                 if (i + 1 != node)
                     neighbours.add(i + 1);
-        }
 
         return neighbours;
     }
 
     private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
     {
-        double num = Math.pow(phero(i, j, edge2phero), A)
+        double num = Math.pow(edge2phero[i - 1][j - 1], A)
                 * Math.pow(heuInfo(i, j, edge2phero), B);
 
         double denum = 0;
-        Set<Integer> neighs = availNeighbours(i, edge2phero);
+        Vector<Integer> neighs = availNeighbours(i, edge2phero);
         if (neighs.size() == 0)
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for (int neigh : neighs)
-            denum += Math.pow(phero(i, neigh, edge2phero), A)
+            denum += Math.pow(edge2phero[i - 1][neigh - 1], A)
                     * Math.pow(heuInfo(i, neigh, edge2phero), B);
 
         return num / denum;
@@ -145,13 +160,6 @@ public class AntSystem
         return 1 / edge2phero[i][j];
     }
 
-    private double phero(int i, int j, double[][] edge2phero)
-    {
-        //  TODO: Remove - Useless
-
-        return edge2phero[i][j];
-    }
-
     private double tourLength(Vector<Integer> path)
     {
         //  TODO: Calculate Lk
@@ -161,7 +169,7 @@ public class AntSystem
 
     private void updateTrails(Map<Vector<Integer>, Double> trails)
     {
-        //  TODO
+        //  TODO: A lot
 
         return;
     }
