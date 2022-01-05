@@ -1,11 +1,7 @@
 
 package acoserve;
 
-import java.util.Vector;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.TreeMap;
+import java.util.*;
 
 public class AntSystem
 {
@@ -16,16 +12,17 @@ public class AntSystem
     public static final double B = 5;
     public static final double EVAPORATE_PER = 0.5;
     public static final int NO_NEIGHBOUR = -1;
+    public static final int NO_PHEROMONE = -1;
     private int nodeCount;
     private Map<Integer, Integer> edges = new TreeMap<>();
+    private Map<Pair<Integer, Integer>, Double> edge2distance = new TreeMap<>();
 
     public AntSystem()
     {
         try
         {
             init();
-        }
-        catch (Exception e)
+        } catch(Exception e)
         {
             System.out.println(e.getMessage());
         }
@@ -34,12 +31,12 @@ public class AntSystem
     private double[][] createPheroTopo()
     {
         double[][] edge2phero = new double[nodeCount][nodeCount];
-        for (int i = 0; i < nodeCount; ++i)
-            for (int j = 0; j < nodeCount; ++j)
-                edge2phero[i][j] = -1;
+        for(int i = 0; i < nodeCount; ++i)
+            for(int j = 0; j < nodeCount; ++j)
+                edge2phero[i][j] = NO_PHEROMONE;
 
         Set<Integer> strNodes = edges.keySet();
-        for (Integer strNode : strNodes)
+        for(Integer strNode : strNodes)
         {
             Integer endNode = edges.get(strNode);
             edge2phero[strNode - 1][endNode - 1] = PHERO_QNT;
@@ -54,17 +51,17 @@ public class AntSystem
         double[][] edge2phero = createPheroTopo();
 
         int i = 0;
-        while (i++ < ITERATIONS)
+        while(i++ < ITERATIONS)
         {
             evalPaths.clear();
             int ant = 1;
-            while (ant++ <= ANTS)
+            while(ant++ <= ANTS)
             {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
                 double length = tourLength(tour);
                 evalPaths.put(tour, length);
             }
-            updateTrails(evalPaths);
+            updateTrails(evalPaths, edge2phero);
         }
 
         return bestPath();
@@ -76,12 +73,12 @@ public class AntSystem
         int srcTemp = src;
         final int destTemp = dest;
 
-        while (srcTemp != destTemp)
+        while(srcTemp != destTemp)
         {
             int neighbour = pickUpNeighbour(srcTemp, edge2phero);
-            if (neighbour == NO_NEIGHBOUR)
+            if(neighbour == NO_NEIGHBOUR)
                 break;  //  Dead end
-            if (!trace.contains(neighbour))
+            if(!trace.contains(neighbour))
                 trace.add(neighbour);
             else
                 break;  //  Cycle
@@ -104,7 +101,8 @@ public class AntSystem
         double value = Math.random();
         // Sort probabilities in range [0, 1] and use a uniform distro to
         // pick up an index domain
-        index = 0; double sum = 0;
+        index = 0;
+        double sum = 0;
         for(; index < neighs.size(); ++index)
         {
             sum += probs[index];
@@ -128,9 +126,9 @@ public class AntSystem
     {
         Vector<Integer> neighbours = new Vector<Integer>();
 
-        for (int i = 0; i < edge2phero[node - 1].length; ++i)
-            if (edge2phero[node - 1][i] >= 0)
-                if (i + 1 != node)
+        for(int i = 0; i < edge2phero[node - 1].length; ++i)
+            if(edge2phero[node - 1][i] >= 0)
+                if(i + 1 != node)
                     neighbours.add(i + 1);
 
         return neighbours;
@@ -143,10 +141,10 @@ public class AntSystem
 
         double denum = 0;
         Vector<Integer> neighs = availNeighbours(i, edge2phero);
-        if (neighs.size() == 0)
+        if(neighs.size() == 0)
             throw new IllegalArgumentException("prob(..): No neighbours");
 
-        for (int neigh : neighs)
+        for(int neigh : neighs)
             denum += Math.pow(edge2phero[i - 1][neigh - 1], A)
                     * Math.pow(heuInfo(i, neigh, edge2phero), B);
 
@@ -155,23 +153,37 @@ public class AntSystem
 
     private double heuInfo(int i, int j, double[][] edge2phero)
     {
-        //  TODO: Correlate with assets and resources, not pheromone
-
-        return 1 / edge2phero[i][j];
+        //  TODO: Replace distance with assets and resources
+        return 1 / edge2distance.get(new Pair<Integer, Integer>(i, j));
     }
 
     private double tourLength(Vector<Integer> path)
     {
-        //  TODO: Calculate Lk
-
+        //  The Lk value
         return (double) path.size();
     }
 
-    private void updateTrails(Map<Vector<Integer>, Double> trails)
+    private void updateTrails(Map<Vector<Integer>, Double> trails, double[][] edge2phero)
     {
-        //  TODO: A lot
+        // Evaporate all existing pheromone levels
+        for(int i = 0; i < nodeCount; ++i)
+            for(int j = 0; j < nodeCount; ++j)
+                if(edge2phero[i][j] != NO_PHEROMONE)
+                    edge2phero[i][j] *= (1 - EVAPORATE_PER);
 
-        return;
+        // Increase pheromone level upon correct paths
+        Set<Vector<Integer>> onlyTrails = trails.keySet();
+        for(Vector<Integer> path : onlyTrails)
+        {
+            Iterator<Integer> it = path.iterator();
+            int str = it.next();
+            while(it.hasNext())
+            {
+                int end = it.next();
+                edge2phero[str - 1][end - 1] += PHERO_QNT / tourLength(path);
+                str = end;
+            }
+        }
     }
 
     Vector<Integer> bestPath()
@@ -179,5 +191,41 @@ public class AntSystem
         //  TODO: Choose the return path
 
         return null;
+    }
+}
+
+record Pair<L, R>(L lhs, R rhs)
+{
+    Pair
+    {
+        assert lhs != null;
+        assert rhs != null;
+    }
+
+    public L getLeft()
+    {
+        return lhs;
+    }
+
+    public R getRight()
+    {
+        return rhs;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return lhs.hashCode() ^ rhs.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(!(obj instanceof Pair))
+            return false;
+
+        Pair pairObj = (Pair) obj;
+
+        return this.lhs.equals(pairObj.getLeft()) && this.rhs.equals(pairObj.getRight());
     }
 }
