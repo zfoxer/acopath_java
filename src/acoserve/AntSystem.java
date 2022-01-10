@@ -15,10 +15,11 @@ public class AntSystem
     public static final int NO_PHEROMONE = -1;
     private int nodeCount;
     private Map<Integer, Integer> edges = new TreeMap<>();
-    private Map<Pair<Integer, Integer>, Double> edge2distance = new TreeMap<>();
+    private Map<Pair<Integer, Integer>, Long> edge2distance = new TreeMap<>();
 
-    public AntSystem()
+    public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance)
     {
+        this.edge2distance = edge2distance;
         try
         {
             init();
@@ -58,13 +59,12 @@ public class AntSystem
             while(ant++ <= ANTS)
             {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
-                double length = tourLength(tour);
-                evalPaths.put(tour, length);
+                evalPaths.put(tour, tourLength(tour));
             }
             updateTrails(evalPaths, edge2phero);
         }
 
-        return bestPath();
+        return bestPath(evalPaths);
     }
 
     private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero)
@@ -160,7 +160,7 @@ public class AntSystem
     private double tourLength(Vector<Integer> path)
     {
         //  The Lk value
-        return (double) path.size();
+        return (double)path.size();
     }
 
     private void updateTrails(Map<Vector<Integer>, Double> trails, double[][] edge2phero)
@@ -186,11 +186,21 @@ public class AntSystem
         }
     }
 
-    Vector<Integer> bestPath()
+    Vector<Integer> bestPath(Map<Vector<Integer>, Double> evalPaths)
     {
-        //  TODO: Choose the return path
+        //  Choose the return path
+        Vector<Integer> retpath = new Vector<>();
+        double eval = Double.MAX_VALUE;
 
-        return null;
+        Set<Vector<Integer>> keys = evalPaths.keySet();
+        for(Vector<Integer> path : keys)
+            if(evalPaths.get(path) < eval)
+            {
+                eval = evalPaths.get(path);
+                retpath = path;
+            }
+
+        return retpath;
     }
 }
 
@@ -206,7 +216,6 @@ record Pair<L, R>(L lhs, R rhs)
     {
         return lhs;
     }
-
     public R getRight()
     {
         return rhs;
@@ -224,8 +233,7 @@ record Pair<L, R>(L lhs, R rhs)
         if(!(obj instanceof Pair))
             return false;
 
-        Pair pairObj = (Pair) obj;
-
+        Pair pairObj = (Pair)obj;
         return this.lhs.equals(pairObj.getLeft()) && this.rhs.equals(pairObj.getRight());
     }
 }
