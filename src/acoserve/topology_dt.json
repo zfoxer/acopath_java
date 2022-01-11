@@ -1,0 +1,26 @@
+{
+  "number_of_nodes": 12,
+  "links": [
+    { "nodes":[0,4] , "length":357 }, { "nodes":[4,0] , "length":357 },
+    { "nodes":[0,5] , "length":344 }, { "nodes":[5,0] , "length":344 },
+    { "nodes":[0,7] , "length":202 }, { "nodes":[7,0] , "length":202 },
+    { "nodes":[1,2] , "length":87 }, { "nodes":[2,1] , "length":87 },
+    { "nodes":[1,4] , "length":459 }, { "nodes":[4,1] , "length":459 },
+    { "nodes":[1,6] , "length":48 }, { "nodes":[6,1] , "length":48 },
+    { "nodes":[2,5] , "length":257 }, { "nodes":[5,2] , "length":257 },
+    { "nodes":[2,6] , "length":98 }, { "nodes":[6,2] , "length":98 },
+    { "nodes":[3,5] , "length":366 }, { "nodes":[5,3] , "length":366 },
+    { "nodes":[3,6] , "length":212 }, { "nodes":[6,3] , "length":212 },
+    { "nodes":[3,7] , "length":411 }, { "nodes":[7,3] , "length":411 },
+    { "nodes":[3,9] , "length":261 }, { "nodes":[9,3] , "length":261 },
+    { "nodes":[3,10] , "length":242 }, { "nodes":[10,3] , "length":242 },
+    { "nodes":[4,5] , "length":188 }, { "nodes":[5,4] , "length":188 },
+    { "nodes":[5,7] , "length":300 }, { "nodes":[7,5] , "length":300 },
+    { "nodes":[7,9] , "length":320 }, { "nodes":[9,7] , "length":320 },
+    { "nodes":[8,9] , "length":211 }, { "nodes":[9,8] , "length":211 },
+    { "nodes":[8,11] , "length":170 }, { "nodes":[11,8] , "length":170 },
+    { "nodes":[9,10] , "length":220 }, { "nodes":[10,9] , "length":220 },
+    { "nodes":[10,11] , "length":102 }, { "nodes":[11,10] , "length":102 }
+  ]
+}
+

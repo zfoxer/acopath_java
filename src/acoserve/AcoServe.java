@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 public class AcoServe
 {
@@ -20,6 +20,7 @@ public class AcoServe
     public static void main(String[] args)
     {
         parseInput(TOPO_FILENAME);
+        AntSystem as = new AntSystem(edge2distance);
     }
 
     private static void parseInput(String fileName)
@@ -51,12 +52,14 @@ public class AcoServe
                 Pair<Integer, Integer> edge = new Pair<>(Integer.valueOf(startStr), Integer.valueOf(endStr));
                 edge2distance.put(edge, length);
             }
+
+            reader.close();
         }
-        catch (IOException e)
+        catch(IOException e)
         {
             e.printStackTrace();
         }
-        catch (ParseException e)
+        catch(ParseException e)
         {
             e.printStackTrace();
         }
@@ -67,7 +70,6 @@ public class AcoServe
         //  TODO
     }
 
-    private static Map<Pair<Integer, Integer>, Long> edge2distance = new TreeMap<>();
-
+    private static Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
     public static final String TOPO_FILENAME = "topology.json";
 }

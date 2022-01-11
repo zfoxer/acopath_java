@@ -2,6 +2,7 @@
 package acoserve;
 
 import java.util.*;
+import java.util.Set;
 
 public class AntSystem
 {
@@ -15,7 +16,7 @@ public class AntSystem
     public static final int NO_PHEROMONE = -1;
     private int nodeCount;
     private Map<Integer, Integer> edges = new TreeMap<>();
-    private Map<Pair<Integer, Integer>, Long> edge2distance = new TreeMap<>();
+    private Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
     public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance)
     {
@@ -115,11 +116,15 @@ public class AntSystem
 
     private void init()
     {
-        //  TODO: Use parsed values
-        nodeCount = 0;
+        Set<Integer> nodes = new TreeSet<>();
+        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
+        for(Pair<Integer, Integer> edge : keys)
+        {
+            nodes.add(edge.getLeft());
+            nodes.add(edge.getRight());
+        }
 
-
-        return;
+        nodeCount = nodes.size();
     }
 
     private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
@@ -153,7 +158,6 @@ public class AntSystem
 
     private double heuInfo(int i, int j, double[][] edge2phero)
     {
-        //  TODO: Replace distance with assets and resources
         return 1 / edge2distance.get(new Pair<Integer, Integer>(i, j));
     }
 
