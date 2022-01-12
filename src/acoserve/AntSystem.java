@@ -14,8 +14,7 @@ public class AntSystem
     public static final double EVAPORATE_PER = 0.5;
     public static final int NO_NEIGHBOUR = -1;
     public static final int NO_PHEROMONE = -1;
-    private int nodeCount;
-    private Map<Integer, Integer> edges = new TreeMap<>();
+    private Set<Integer> nodes = new TreeSet<>();
     private Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
     public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance)
@@ -33,31 +32,24 @@ public class AntSystem
 
     private void init()
     {
-        Set<Integer> nodes = new TreeSet<>();
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
         for(Pair<Integer, Integer> edge : keys)
         {
             nodes.add(edge.getLeft());
             nodes.add(edge.getRight());
-            edges.put(edge.getLeft(), edge.getRight());
         }
-
-        nodeCount = nodes.size();
     }
 
     private double[][] createPheroTopo()
     {
-        double[][] edge2phero = new double[nodeCount][nodeCount];
-        for(int i = 0; i < nodeCount; ++i)
-            for(int j = 0; j < nodeCount; ++j)
+        double[][] edge2phero = new double[nodes.size()][nodes.size()];
+        for(int i = 0; i < nodes.size(); ++i)
+            for(int j = 0; j < nodes.size(); ++j)
                 edge2phero[i][j] = NO_PHEROMONE;
 
-        Set<Integer> strNodes = edges.keySet();
-        for(Integer strNode : strNodes)
-        {
-            Integer endNode = edges.get(strNode);
-            edge2phero[strNode][endNode] = PHERO_QNT;
-        }
+        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
+        for(Pair<Integer, Integer> edge : keys)
+            edge2phero[edge.getLeft()][edge.getRight()] = PHERO_QNT;
 
         return edge2phero;
     }
@@ -178,8 +170,8 @@ public class AntSystem
     private void updateTrails(Map<Vector<Integer>, Double> trails, double[][] edge2phero)
     {
         // Evaporate existing pheromone levels
-        for(int i = 0; i < nodeCount; ++i)
-            for(int j = 0; j < nodeCount; ++j)
+        for(int i = 0; i < nodes.size(); ++i)
+            for(int j = 0; j < nodes.size(); ++j)
                 if(edge2phero[i][j] != NO_PHEROMONE)
                     edge2phero[i][j] *= (1 - EVAPORATE_PER);
 
