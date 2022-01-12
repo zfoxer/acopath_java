@@ -24,10 +24,25 @@ public class AntSystem
         try
         {
             init();
-        } catch(Exception e)
+        }
+        catch(Exception e)
         {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void init()
+    {
+        Set<Integer> nodes = new TreeSet<>();
+        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
+        for(Pair<Integer, Integer> edge : keys)
+        {
+            nodes.add(edge.getLeft());
+            nodes.add(edge.getRight());
+            edges.put(edge.getLeft(), edge.getRight());
+        }
+
+        nodeCount = nodes.size();
     }
 
     private double[][] createPheroTopo()
@@ -41,7 +56,7 @@ public class AntSystem
         for(Integer strNode : strNodes)
         {
             Integer endNode = edges.get(strNode);
-            edge2phero[strNode - 1][endNode - 1] = PHERO_QNT;
+            edge2phero[strNode][endNode] = PHERO_QNT;
         }
 
         return edge2phero;
@@ -49,7 +64,7 @@ public class AntSystem
 
     public Vector<Integer> path(int src, int dest)
     {
-        Map<Vector<Integer>, Double> evalPaths = new TreeMap<>();
+        Map<Vector<Integer>, Double> evalPaths = new HashMap<>();
         double[][] edge2phero = createPheroTopo();
 
         int i = 0;
@@ -60,7 +75,8 @@ public class AntSystem
             while(ant++ <= ANTS)
             {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
-                evalPaths.put(tour, tourLength(tour));
+                if(tour.size() > 1)
+                    evalPaths.put(tour, tourLength(tour));
             }
             updateTrails(evalPaths, edge2phero);
         }
@@ -87,12 +103,18 @@ public class AntSystem
             srcTemp = neighbour;
         }
 
+        if(trace.size() <= 1)
+            return new Vector<Integer>();
+
         return trace.firstElement() == src && trace.lastElement() == dest ? trace : new Vector<Integer>();
     }
 
     private Integer pickUpNeighbour(int src, double[][] edge2phero)
     {
         Vector<Integer> neighs = availNeighbours(src, edge2phero);
+        if(neighs.size() == 0)
+            return NO_NEIGHBOUR;
+
         double probs[] = new double[neighs.size()];
         int index = 0;
         // Produce a transition probability to each one
@@ -102,9 +124,8 @@ public class AntSystem
         double value = Math.random();
         // Sort probabilities in range [0, 1] and use a uniform distro to
         // pick up an index domain
-        index = 0;
         double sum = 0;
-        for(; index < neighs.size(); ++index)
+        for(index = 0; index < neighs.size(); ++index)
         {
             sum += probs[index];
             if(value <= sum)
@@ -114,34 +135,21 @@ public class AntSystem
         return neighs.size() > 0 ? neighs.elementAt(index) : NO_NEIGHBOUR;
     }
 
-    private void init()
-    {
-        Set<Integer> nodes = new TreeSet<>();
-        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
-        for(Pair<Integer, Integer> edge : keys)
-        {
-            nodes.add(edge.getLeft());
-            nodes.add(edge.getRight());
-        }
-
-        nodeCount = nodes.size();
-    }
-
     private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
     {
         Vector<Integer> neighbours = new Vector<Integer>();
 
-        for(int i = 0; i < edge2phero[node - 1].length; ++i)
-            if(edge2phero[node - 1][i] >= 0)
-                if(i + 1 != node)
-                    neighbours.add(i + 1);
+        for(int i = 0; i < edge2phero[node].length; ++i)
+            if(edge2phero[node][i] >= 0)
+                if(i != node)
+                    neighbours.add(i);
 
         return neighbours;
     }
 
     private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
     {
-        double num = Math.pow(edge2phero[i - 1][j - 1], A)
+        double num = Math.pow(edge2phero[i][j], A)
                 * Math.pow(heuInfo(i, j, edge2phero), B);
 
         double denum = 0;
@@ -150,7 +158,7 @@ public class AntSystem
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for(int neigh : neighs)
-            denum += Math.pow(edge2phero[i - 1][neigh - 1], A)
+            denum += Math.pow(edge2phero[i][neigh], A)
                     * Math.pow(heuInfo(i, neigh, edge2phero), B);
 
         return num / denum;
@@ -169,7 +177,7 @@ public class AntSystem
 
     private void updateTrails(Map<Vector<Integer>, Double> trails, double[][] edge2phero)
     {
-        // Evaporate all existing pheromone levels
+        // Evaporate existing pheromone levels
         for(int i = 0; i < nodeCount; ++i)
             for(int j = 0; j < nodeCount; ++j)
                 if(edge2phero[i][j] != NO_PHEROMONE)
@@ -184,7 +192,7 @@ public class AntSystem
             while(it.hasNext())
             {
                 int end = it.next();
-                edge2phero[str - 1][end - 1] += PHERO_QNT / tourLength(path);
+                edge2phero[str][end] += PHERO_QNT / tourLength(path);
                 str = end;
             }
         }

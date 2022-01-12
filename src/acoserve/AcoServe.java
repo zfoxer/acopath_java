@@ -13,14 +13,16 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class AcoServe
 {
-
     public static void main(String[] args)
     {
         parseInput(TOPO_FILENAME);
         AntSystem as = new AntSystem(edge2distance);
+        Vector<Integer> path = as.path(0, 4);
+        System.out.println(path);
     }
 
     private static void parseInput(String fileName)
@@ -53,7 +55,7 @@ public class AcoServe
                 edge2distance.put(edge, length);
             }
 
-            reader.close();
+            //reader.close();
         }
         catch(IOException e)
         {
