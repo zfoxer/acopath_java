@@ -21,7 +21,7 @@ public class AcoServe
     {
         parseInput(TOPO_FILENAME);
         AntSystem as = new AntSystem(edge2distance);
-        Vector<Integer> path = as.path(0, 4);
+        Vector<Integer> path = as.path(4, 1);
         System.out.println(path);
     }
 

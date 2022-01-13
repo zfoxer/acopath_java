@@ -80,6 +80,7 @@ public class AntSystem
     {
         Vector<Integer> trace = new Vector<>();
         int srcTemp = src;
+        trace.add(srcTemp);
         final int destTemp = dest;
 
         while(srcTemp != destTemp)
@@ -158,7 +159,10 @@ public class AntSystem
 
     private double heuInfo(int i, int j, double[][] edge2phero)
     {
-        return 1 / edge2distance.get(new Pair<Integer, Integer>(i, j));
+        //  Should not be in the return statement
+        double distance = edge2distance.get(new Pair<Integer, Integer>(i, j));
+
+        return 1 / distance;
     }
 
     private double tourLength(Vector<Integer> path)
