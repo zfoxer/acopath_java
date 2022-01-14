@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.lang.String;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class AcoServe
     {
         parseInput(TOPO_FILENAME);
         AntSystem as = new AntSystem(edge2distance);
-        Vector<Integer> path = as.path(4, 1);
+        Vector<Integer> path = as.path(0, 5);
         System.out.println(path);
     }
 
@@ -54,8 +53,6 @@ public class AcoServe
                 Pair<Integer, Integer> edge = new Pair<>(Integer.valueOf(startStr), Integer.valueOf(endStr));
                 edge2distance.put(edge, length);
             }
-
-            //reader.close();
         }
         catch(IOException e)
         {
