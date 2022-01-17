@@ -1,17 +1,16 @@
-
 package acoserve;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.Iterator;
 
 public class AntSystem
 {
-    public static final int ANTS = 300;
-    public static final int ITERATIONS = 100;
+    public static final int ANTS = 30;
+    public static final int ITERATIONS = 10;
     public static final int PHERO_QNT = 100;
     public static final double A = 1;
     public static final double B = 5;
@@ -60,26 +59,30 @@ public class AntSystem
 
     public Vector<Integer> path(int src, int dest)
     {
-        Set<Vector<Integer>> allPaths = new TreeSet<>();
-        Map<Vector<Integer>, Double> evalPaths = new HashMap<>();
+        Map<Vector<Integer>, Integer> pathCount = new HashMap<>();
         double[][] edge2phero = createPheroTopo();
 
         int i = 0;
         while(i++ < ITERATIONS)
         {
-            evalPaths.clear();
+            pathCount.clear();
             int ant = 0;
             while(ant++ < ANTS)
             {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
                 if(tour.size() > 1)
-                    evalPaths.put(tour, tourLength(tour));
+                    if(pathCount.containsKey(tour))
+                    {
+                        Integer currentValue = pathCount.get(tour);
+                        pathCount.replace(tour, currentValue, currentValue + 1);
+                    }
+                    else
+                        pathCount.put(tour, 1);
             }
-            updateTrails(evalPaths, edge2phero);
-            allPaths.addAll(evalPaths.keySet());
+            updateTrails(pathCount, edge2phero);
         }
 
-        return bestPath(allPaths, edge2phero);
+        return convergedPath(pathCount);
     }
 
     private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero)
@@ -135,7 +138,7 @@ public class AntSystem
 
     private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
     {
-        Vector<Integer> neighbours = new Vector<Integer>();
+        Vector<Integer> neighbours = new Vector<>();
 
         for(int i = 0; i < edge2phero[node].length; ++i)
             if(edge2phero[node][i] >= 0)
@@ -172,11 +175,14 @@ public class AntSystem
 
     private double tourLength(Vector<Integer> path)
     {
-        //  The Lk value
+        //  The Lk value: Edge weight sum
         return (double)path.size();
+
+        //  TODO: Use weights
+
     }
 
-    private void updateTrails(Map<Vector<Integer>, Double> evalPaths, double[][] edge2phero)
+    private void updateTrails(Map<Vector<Integer>, Integer> evalPaths, double[][] edge2phero)
     {
         // Evaporate existing pheromone levels
         for(int i = 0; i < nodes.size(); ++i)
@@ -199,23 +205,21 @@ public class AntSystem
         }
     }
 
-    Vector<Integer> bestPath(Set<Vector<Integer>> allPaths, double[][] edge2phero)
+    Vector<Integer> convergedPath(Map<Vector<Integer>, Integer> pathCount)
     {
-        /*//  Choose the return path
+        //  Choose the return path
         Vector<Integer> retpath = new Vector<>();
-        double eval = Double.MAX_VALUE;
+        Integer cnt = Integer.MIN_VALUE;
 
-        Set<Vector<Integer>> keys = evalPaths.keySet();
+        Set<Vector<Integer>> keys = pathCount.keySet();
         for(Vector<Integer> path : keys)
-            if(evalPaths.get(path) < eval)
+            if(pathCount.get(path) > cnt)
             {
-                eval = evalPaths.get(path);
+                cnt = pathCount.get(path);
                 retpath = path;
             }
 
-        return retpath;*/
-
-        return null;
+        return retpath;
     }
 }
 
