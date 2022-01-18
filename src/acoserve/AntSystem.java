@@ -9,8 +9,8 @@ import java.util.Vector;
 
 public class AntSystem
 {
-    public static final int ANTS = 30;
-    public static final int ITERATIONS = 10;
+    public static final int ANTS = 3000;
+    public static final int ITERATIONS = 1000;
     public static final int PHERO_QNT = 100;
     public static final double A = 1;
     public static final double B = 5;
@@ -65,7 +65,6 @@ public class AntSystem
         int i = 0;
         while(i++ < ITERATIONS)
         {
-            pathCount.clear();
             int ant = 0;
             while(ant++ < ANTS)
             {
@@ -150,8 +149,7 @@ public class AntSystem
 
     private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
     {
-        double num = Math.pow(edge2phero[i][j], A)
-                * Math.pow(heuInfo(i, j, edge2phero), B);
+        double num = Math.pow(edge2phero[i][j], A) * Math.pow(heuInfo(i, j, edge2phero), B);
 
         double denum = 0;
         Vector<Integer> neighs = availNeighbours(i, edge2phero);
@@ -159,8 +157,7 @@ public class AntSystem
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for(int neigh : neighs)
-            denum += Math.pow(edge2phero[i][neigh], A)
-                    * Math.pow(heuInfo(i, neigh, edge2phero), B);
+            denum += Math.pow(edge2phero[i][neigh], A) * Math.pow(heuInfo(i, neigh, edge2phero), B);
 
         return num / denum;
     }
@@ -175,11 +172,21 @@ public class AntSystem
 
     private double tourLength(Vector<Integer> path)
     {
+        if(path.size() <= 1)
+            return 0;
+
         //  The Lk value: Edge weight sum
-        return (double)path.size();
+        Iterator it = path.iterator();
+        double pathSum = 0;
+        int strNode = (int)it.next();
+        while(it.hasNext())
+        {
+            int endNode = (int)it.next();
+            pathSum += edge2distance.get(new Pair<Integer, Integer>(strNode, endNode));
+            strNode = endNode;
+        }
 
-        //  TODO: Use weights
-
+        return pathSum;
     }
 
     private void updateTrails(Map<Vector<Integer>, Integer> evalPaths, double[][] edge2phero)
@@ -235,6 +242,7 @@ record Pair<L, R>(L lhs, R rhs)
     {
         return lhs;
     }
+
     public R getRight()
     {
         return rhs;
