@@ -9,8 +9,8 @@ import java.util.Vector;
 
 public class AntSystem
 {
-    public static final int ANTS = 3000;
-    public static final int ITERATIONS = 1000;
+    public static final int ANTS = 300;
+    public static final int ITERATIONS = 100;
     public static final int PHERO_QNT = 100;
     public static final double A = 1;
     public static final double B = 5;
@@ -52,7 +52,10 @@ public class AntSystem
 
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
         for(Pair<Integer, Integer> edge : keys)
+        {
+            edge2phero[edge.getRight()][edge.getLeft()] = PHERO_QNT;
             edge2phero[edge.getLeft()][edge.getRight()] = PHERO_QNT;
+        }
 
         return edge2phero;
     }
@@ -140,29 +143,27 @@ public class AntSystem
         Vector<Integer> neighbours = new Vector<>();
 
         for(int i = 0; i < edge2phero[node].length; ++i)
-            if(edge2phero[node][i] >= 0)
-                if(i != node)
-                    neighbours.add(i);
+            if(edge2phero[node][i] >= 0 && i != node)
+                neighbours.add(i);
 
         return neighbours;
     }
 
     private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
     {
-        double num = Math.pow(edge2phero[i][j], A) * Math.pow(heuInfo(i, j, edge2phero), B);
-
+        double num = Math.pow(edge2phero[i][j], A) * Math.pow(heuInfo(i, j), B);
         double denum = 0;
         Vector<Integer> neighs = availNeighbours(i, edge2phero);
         if(neighs.size() == 0)
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for(int neigh : neighs)
-            denum += Math.pow(edge2phero[i][neigh], A) * Math.pow(heuInfo(i, neigh, edge2phero), B);
+            denum += Math.pow(edge2phero[i][neigh], A) * Math.pow(heuInfo(i, neigh), B);
 
         return num / denum;
     }
 
-    private double heuInfo(int i, int j, double[][] edge2phero)
+    private double heuInfo(int i, int j)
     {
         //  Should not be in the return statement
         double distance = edge2distance.get(new Pair<Integer, Integer>(i, j));
@@ -207,6 +208,7 @@ public class AntSystem
             {
                 int end = it.next();
                 edge2phero[str][end] += PHERO_QNT / tourLength(path);
+                edge2phero[end][str] += PHERO_QNT / tourLength(path);
                 str = end;
             }
         }
@@ -242,7 +244,6 @@ record Pair<L, R>(L lhs, R rhs)
     {
         return lhs;
     }
-
     public R getRight()
     {
         return rhs;
