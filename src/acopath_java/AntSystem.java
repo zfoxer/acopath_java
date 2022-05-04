@@ -1,4 +1,4 @@
-package acoserve;
+package acopath_java;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -9,17 +9,60 @@ import java.util.Vector;
 
 public class AntSystem
 {
+    /**
+     * The number of ants to unleash in each iteration.
+     */
     public static final int ANTS = 300;
+
+    /**
+     * Total number of iterations for ant unleashing.
+     */
     public static final int ITERATIONS = 100;
+
+    /**
+     * Initial pheromone quantity.
+     */
     public static final int PHERO_QNT = 100;
+
+    /**
+     * Provides importance to its base parameter.
+     */
     public static final double A = 1;
+
+    /**
+     * Provides importance to its base parameter.
+     */
     public static final double B = 5;
+
+    /**
+     * Percentage of pheromone evaporation.
+     */
     public static final double EVAPORATE_PER = 0.5;
+
+    /**
+     * Denotes that no neighbour exists for this node.
+     */
     public static final int NO_NEIGHBOUR = -1;
+
+    /**
+     * Denote that no pheromone exists for this edge.
+     */
     public static final int NO_PHEROMONE = -1;
+
+    /**
+     * Set containing topology's nodes.
+     */
     private Set<Integer> nodes = new TreeSet<>();
+
+    /**
+     * Mapping each edge to its distance.
+     */
     private Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
+    /**
+     * Creates a new Ant System from a container of edges mapped to their distances.
+     * @param edge2distance Topology representation.
+     */
     public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance)
     {
         this.edge2distance = edge2distance;
@@ -33,6 +76,9 @@ public class AntSystem
         }
     }
 
+    /**
+     * Initialises the Ant System.
+     */
     private void init()
     {
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
@@ -43,6 +89,10 @@ public class AntSystem
         }
     }
 
+    /**
+     * Creates a container representing the topology with initial pheromone quantity on its edges.
+     * @return double[][] A two dimensional array with the amount of pheromone each edge carries initially.
+     */
     private double[][] createPheroTopo()
     {
         double[][] edge2phero = new double[nodes.size()][nodes.size()];
@@ -60,6 +110,12 @@ public class AntSystem
         return edge2phero;
     }
 
+    /**
+     * Returns the path consisting of a sequence of nodes, starting from 'src' and ending to 'dest'.
+     * @param src Path starting node.
+     * @param dest Path ending node.
+     * @return Vector<Integer> A node sequence comprising the path.
+     */
     public Vector<Integer> path(int src, int dest)
     {
         Map<Vector<Integer>, Integer> pathCount = new HashMap<>();
@@ -87,6 +143,13 @@ public class AntSystem
         return convergedPath(pathCount);
     }
 
+    /**
+     * Unleashes an ant from the 'src' node, hoping it will reach the 'dest' node.
+     * @param src The node to unleash the ant from.
+     * @param dest The node for the ant to reach.
+     * @param edge2phero Topology's edges with the amount of pheromone for each.
+     * @return Vector<Integer> The path traversal for this ant.
+     */
     private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero)
     {
         Vector<Integer> trace = new Vector<>();
@@ -112,6 +175,12 @@ public class AntSystem
         return trace.firstElement() == src && trace.lastElement() == dest ? trace : new Vector<Integer>();
     }
 
+    /**
+     * Picks up the next neighbour to continue the traversal.
+     * @param node The current node.
+     * @param edge2phero The amount of pheromone each edge carries currently.
+     * @return Integer The next neighbour.
+     */
     private Integer pickUpNeighbour(int node, double[][] edge2phero)
     {
         Vector<Integer> neighs = availNeighbours(node, edge2phero);     //  Unsorted neighbours
@@ -138,6 +207,12 @@ public class AntSystem
         return neighs.size() > 0 ? neighs.elementAt(index) : NO_NEIGHBOUR;
     }
 
+    /**
+     * Checks node's available neighbours.
+     * @param node The current node to check its available neighbours.
+     * @param edge2phero The amount of pheromone each edge carries currently.
+     * @return Vector<Integer> Node's neighbours collected.
+     */
     private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
     {
         Vector<Integer> neighbours = new Vector<>();
@@ -149,6 +224,14 @@ public class AntSystem
         return neighbours;
     }
 
+    /**
+     * Produces a probability number to pick up node 'j' from node 'i'.
+     * @param i Starting edge node.
+     * @param j Ending edge node.
+     * @param edge2phero The amount of pheromone each edge carries currently.
+     * @return double The probability.
+     * @throws IllegalArgumentException In case no available neighbours exist.
+     */
     private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
     {
         double num = Math.pow(edge2phero[i][j], A) * Math.pow(heuInfo(i, j), B);
@@ -163,6 +246,12 @@ public class AntSystem
         return num / denum;
     }
 
+    /**
+     * Produces the heuristic value from node 'i' from node 'j'.
+     * @param i Starting edge node.
+     * @param j Ending edge node.
+     * @return double The heuristic info.
+     */
     private double heuInfo(int i, int j)
     {
         //  Should not be in the return statement
@@ -171,6 +260,11 @@ public class AntSystem
         return 1 / distance;
     }
 
+    /**
+     * Calculates the sum of path's edge distances.
+     * @param path The node sequence comprising the path.
+     * @return The total path distance.
+     */
     private double tourLength(Vector<Integer> path)
     {
         if(path.size() <= 1)
@@ -190,6 +284,11 @@ public class AntSystem
         return pathSum;
     }
 
+    /**
+     * Updates traversed paths pheromone levels.
+     * @param evalPaths The traversed paths to update their pheromone levels.
+     * @param edge2phero The amount of pheromone each edge carries currently.
+     */
     private void updateTrails(Map<Vector<Integer>, Integer> evalPaths, double[][] edge2phero)
     {
         // Evaporate existing pheromone levels
@@ -214,6 +313,11 @@ public class AntSystem
         }
     }
 
+    /**
+     * Returns the path with the higher occurrence.
+     * @param pathCount A map of paths to occurrence numbers for each.
+     * @return Vector<Integer> The chosen path.
+     */
     Vector<Integer> convergedPath(Map<Vector<Integer>, Integer> pathCount)
     {
         //  Choose the return path
@@ -232,29 +336,59 @@ public class AntSystem
     }
 }
 
+/**
+ * Typical pair record.
+ * @param lhs The left item.
+ * @param rhs The right item.
+ * @param <L> The type of the left item.
+ * @param <R> The type of the right item.
+ */
 record Pair<L, R>(L lhs, R rhs)
 {
+    /**
+     * Asserts for the null case.
+     * @param lhs The left hand side.
+     * @param rhs The right hand side.
+     */
     Pair
     {
         assert lhs != null;
         assert rhs != null;
     }
 
+    /**
+     * Returns the left item.
+     * @return The left hand side.
+     */
     public L getLeft()
     {
         return lhs;
     }
+
+    /**
+     * Returns the right item.
+     * @return The right hand side item.
+     */
     public R getRight()
     {
         return rhs;
     }
 
+    /**
+     * Hashcode method.
+     * @return int The hash code.
+     */
     @Override
     public int hashCode()
     {
         return lhs.hashCode() ^ rhs.hashCode();
     }
 
+    /**
+     * Checks for equality.
+     * @param obj The reference object with which to compare.
+     * @return true If equals.
+     */
     @Override
     public boolean equals(Object obj)
     {

@@ -1,4 +1,4 @@
-package acoserve;
+package acopath_java;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -13,8 +13,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * Main entry point, the front-end.
+ */
 public class AcoServe
 {
+    /**
+     * Main programme entry with unused arguments.
+     * @param args Not used for now.
+     */
     public static void main(String[] args)
     {
         parseInput(TOPO_FILENAME);
@@ -23,6 +30,10 @@ public class AcoServe
         System.out.println(path);
     }
 
+    /**
+     * Parses topology input.
+     * @param fileName The JSON topology filename.
+     */
     private static void parseInput(String fileName)
     {
         JSONParser parser = new JSONParser();
@@ -63,11 +74,18 @@ public class AcoServe
         }
     }
 
-    private static void writeOutput(String fileName)
+    /*private static void writeOutput(String fileName)
     {
         //  TODO
-    }
+    }*/
 
+    /**
+     * Mapping a Pair of nodes to their Long distance.
+     */
     private static Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
+
+    /**
+     * Filename containing the topology in JSON format.
+     */
     public static final String TOPO_FILENAME = "topology.json";
 }
