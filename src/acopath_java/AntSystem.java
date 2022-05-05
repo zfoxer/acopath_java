@@ -10,12 +10,12 @@ import java.util.Vector;
 public class AntSystem
 {
     /**
-     * The number of ants to unleash in each iteration.
+     * The default number of ants to unleash in each iteration.
      */
     public static final int ANTS = 300;
 
     /**
-     * Total number of iterations for ant unleashing.
+     * Total default number of iterations for ant unleashing.
      */
     public static final int ITERATIONS = 100;
 
@@ -60,11 +60,23 @@ public class AntSystem
     private Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
     /**
+     * The number of ants to unleash in each iteration.
+     */
+    private int ants = 0;
+
+    /**
+     * Total number of iterations for ant unleashing.
+     */
+    private int iterations = 0;
+
+    /**
      * Creates a new Ant System from a container of edges mapped to their distances.
      * @param edge2distance Topology representation.
      */
-    public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance)
+    public AntSystem(Map<Pair<Integer, Integer>, Long> edge2distance, int ants, int iterations)
     {
+        this.ants = ants;
+        this.iterations = iterations;
         this.edge2distance = edge2distance;
         try
         {
@@ -81,6 +93,11 @@ public class AntSystem
      */
     private void init()
     {
+        if(ants <= 0)
+            ants = ANTS;
+        if(iterations <= 0)
+            iterations = ITERATIONS;
+
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
         for(Pair<Integer, Integer> edge : keys)
         {
@@ -122,10 +139,10 @@ public class AntSystem
         double[][] edge2phero = createPheroTopo();
 
         int i = 0;
-        while(i++ < ITERATIONS)
+        while(i++ < iterations)
         {
             int ant = 0;
-            while(ant++ < ANTS)
+            while(ant++ < ants)
             {
                 Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
                 if(tour.size() > 1)

@@ -19,14 +19,53 @@ import java.util.Vector;
 public class AcoServe
 {
     /**
+     * Hardcoded version number.
+     */
+    private static String VERSION = "1.0";
+
+    /**
+     * Provides programme usage details.
+     * @return String Usage details.
+     */
+    private static String usage()
+    {
+        return "AcoPath for Java " + VERSION
+                + "\n(C) 2022 by Constantine Kyriakopoulos"
+                + "\nReleased under GNU GPL v2"
+                + "\n\nUsage: java -jar acopath.jar [src node] [dest node] [topology file]";
+    }
+
+    /**
      * Main programme entry with unused arguments.
      * @param args Not used for now.
      */
     public static void main(String[] args)
     {
-        parseInput(TOPO_FILENAME);
-        AntSystem as = new AntSystem(edge2distance);
-        Vector<Integer> path = as.path(0, 5);
+        if(args.length != 3)
+        {
+            System.out.println(usage());
+            System.exit(0);
+        }
+
+        int nds[] = new int[args.length - 1];
+        try
+        {
+            String topoFilename;
+            int i = 0;
+            while(i < args.length - 1)
+                nds[i] = Integer.valueOf(args[i++]);
+            topoFilename = args[i];
+            parseInput(topoFilename);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            System.out.println(usage());
+            System.exit(1);
+        }
+
+        AntSystem as = new AntSystem(edge2distance, AntSystem.ANTS, AntSystem.ITERATIONS);
+        Vector<Integer> path = as.path(nds[0], nds[1]);
         System.out.println(path);
     }
 
@@ -34,7 +73,7 @@ public class AcoServe
      * Parses topology input.
      * @param fileName The JSON topology filename.
      */
-    private static void parseInput(String fileName)
+    private static void parseInput(String fileName) throws IOException, ParseException
     {
         JSONParser parser = new JSONParser();
 
@@ -67,25 +106,22 @@ public class AcoServe
         catch(IOException e)
         {
             e.printStackTrace();
+            throw e;
         }
         catch(ParseException e)
         {
             e.printStackTrace();
+            throw e;
         }
     }
 
-    /*private static void writeOutput(String fileName)
-    {
-        //  TODO
-    }*/
-
     /**
-     * Mapping a Pair of nodes to their Long distance.
+     * Mapping a 'Pair' of nodes to their 'Long' distance.
      */
     private static Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
     /**
-     * Filename containing the topology in JSON format.
+     * Default filename containing the topology in JSON format.
      */
     public static final String TOPO_FILENAME = "topology.json";
 }
