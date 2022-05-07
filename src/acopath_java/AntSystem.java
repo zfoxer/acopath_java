@@ -1,8 +1,8 @@
 /*
  * AcoPath for Java: Shortest path calculation using Ant Colony Optimization
- * Copyright (C) 2022 by Constantine Kyriakopoulos
+ * Copyright (C) 2021-2022 by Constantine Kyriakopoulos
  * zfox@users.sourceforge.net
- * @version 1.0
+ * @version 1.0.1
  *
  * @section LICENSE
  *

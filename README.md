@@ -1,8 +1,8 @@
 # AcoPath for Java: Ant Colony Optimization algorithm for the shortest path problem
 
 <pre>
-Copyright (C) 2022 by Constantine Kyriakopoulos, zfox@users.sourceforge.net
-Version: 1.0
+Copyright (C) 2021-2022 by Constantine Kyriakopoulos, zfox@users.sourceforge.net
+Version: 1.0.1
 License: GNU GPL Version 2
 </pre>
 
@@ -22,7 +22,10 @@ Execute 'java -jar acopath.jar [src node] [dest node] [topology file]' where [sr
 
 As a client programmer, create a new instance of AntSystem in your code passing as argument a Map<Pair<Integer, Integer>, Long> instance, representing directional connections between nodes and the distacne in betweeen. Next, execute the method path(src, dest) where src is the source node and dest the destination to reach. This returns the valid path which ants converge to.
 
-Developed with Oracle Java 17.
+Utilises [JSON Simple](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar) [[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)] for topology input parsing.
+
+Developed with Oracle Java 17.0.2.
+
 
 ## Related work
 
@@ -35,5 +38,6 @@ Developed with Oracle Java 17.
 ## Changelog
 
 <pre>
-1.0      2022-05-07    Initial public release
+1.0.1    2022-05-08    Minor fixes.
+1.0      2022-05-07    Initial public release.
 </pre>

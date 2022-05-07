@@ -1,8 +1,8 @@
 /*
  * AcoPath for Java: Shortest path calculation using Ant Colony Optimization
- * Copyright (C) 2022 by Constantine Kyriakopoulos
+ * Copyright (C) 2021-2022 by Constantine Kyriakopoulos
  * zfox@users.sourceforge.net
- * @version 1.0
+ * @version 1.0.1
  *
  * @section LICENSE
  *
@@ -44,7 +44,12 @@ public class AcoServe
     /**
      * Hardcoded version number.
      */
-    private static final String VERSION = "1.0";
+    private static final String VERSION = "1.0.1";
+
+    /**
+     * Mapping a 'Pair' of nodes to their 'Long' distance.
+     */
+    private static Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
 
     /**
      * Provides programme usage details.
@@ -53,7 +58,7 @@ public class AcoServe
     private static String usage()
     {
         return "AcoPath for Java " + VERSION
-                + "\n(C) 2022 by Constantine Kyriakopoulos"
+                + "\n(C) 2021-2022 by Constantine Kyriakopoulos"
                 + "\nReleased under GNU GPL v2"
                 + "\n\nUsage: java -jar acopath.jar [src node] [dest node] [topology file]\n";
     }
@@ -82,7 +87,6 @@ public class AcoServe
         }
         catch(Exception e)
         {
-            e.printStackTrace();
             System.out.println(usage());
             System.exit(1);
         }
@@ -139,14 +143,4 @@ public class AcoServe
             throw e;
         }
     }
-
-    /**
-     * Mapping a 'Pair' of nodes to their 'Long' distance.
-     */
-    private static Map<Pair<Integer, Integer>, Long> edge2distance = new HashMap<>();
-
-    /**
-     * Default filename containing the topology in JSON format.
-     */
-    public static final String TOPO_FILENAME = "topology.json";
 }
