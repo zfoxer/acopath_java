@@ -18,9 +18,9 @@ This is a heuristic method, i.e., optimal results are not always feasible. Accor
 
 ## Usage
 
-Execute 'java -jar acopath.jar [src node] [dest node] [topology file]' where [src node] is the source node number, [dest node] is the destination node number, and [topology file] is the file of the network topology representation in JSON format.
+Execute _'java -jar acopath.jar [src node] [dest node] [topology file]'_ where _[src node]_ is the source node number, _[dest node]_ is the destination node number, and _[topology file]_ is the file of the network topology representation in JSON format.
 
-As a client programmer, create a new instance of AntSystem in your code passing as argument a Map<Pair<Integer, Integer>, Long> instance, representing directional connections between nodes and the distacne in betweeen. Next, execute the method path(src, dest) where src is the source node and dest the destination to reach. This returns the valid path which ants converge to.
+As a client programmer, create a new instance of _AntSystem_ in your code passing as argument a _Map<Pair<Integer, Integer>, Long>_ instance, representing directional connections between nodes and their distance. Next, execute the method _path(src, dest)_ where _src_ is the source node and _dest_ the destination to reach. This returns the valid path which ants converge to.
 
 Utilises [JSON Simple](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar) [[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)] for topology input parsing.
 
