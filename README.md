@@ -38,7 +38,7 @@ Developed with Oracle Java 17.0.4.
 ## Changelog
 
 <pre>
-1.0.2    2022-08-XX    Fix directional graph structure.
+1.0.2    2022-07-30    Fix directional graph structure.
 1.0.1    2022-05-08    Minor fixes.
 1.0      2022-05-07    Initial public release.
 </pre>
