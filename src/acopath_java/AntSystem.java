@@ -354,7 +354,7 @@ public class AntSystem
      * @param pathCount A map of paths to occurrence numbers for each.
      * @return Vector<Integer> The chosen path.
      */
-    Vector<Integer> convergedPath(Map<Vector<Integer>, Integer> pathCount)
+    private Vector<Integer> convergedPath(Map<Vector<Integer>, Integer> pathCount)
     {
         //  Choose the return path
         Vector<Integer> retpath = new Vector<>();
