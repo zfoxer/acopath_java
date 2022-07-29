@@ -2,7 +2,7 @@
  * AcoPath for Java: Shortest path calculation using Ant Colony Optimization
  * Copyright (C) 2021-2022 by Constantine Kyriakopoulos
  * zfox@users.sourceforge.net
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @section LICENSE
  *
@@ -44,7 +44,7 @@ public class AcoServe
     /**
      * Hardcoded version number.
      */
-    private static final String VERSION = "1.0.1";
+    private static final String VERSION = "1.0.2";
 
     /**
      * Mapping a 'Pair' of nodes to their 'Long' distance.

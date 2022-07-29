@@ -2,7 +2,7 @@
  * AcoPath for Java: Shortest path calculation using Ant Colony Optimization
  * Copyright (C) 2021-2022 by Constantine Kyriakopoulos
  * zfox@users.sourceforge.net
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @section LICENSE
  *
@@ -142,10 +142,7 @@ public class AntSystem
 
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
         for(Pair<Integer, Integer> edge : keys)
-        {
-            edge2phero[edge.getRight()][edge.getLeft()] = PHERO_QNT;
             edge2phero[edge.getLeft()][edge.getRight()] = PHERO_QNT;
-        }
 
         return edge2phero;
     }
@@ -347,7 +344,6 @@ public class AntSystem
             {
                 int end = it.next();
                 edge2phero[str][end] += PHERO_QNT / tourLength(path);
-                edge2phero[end][str] += PHERO_QNT / tourLength(path);
                 str = end;
             }
         }

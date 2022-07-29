@@ -2,7 +2,7 @@
 
 <pre>
 Copyright (C) 2021-2022 by Constantine Kyriakopoulos, zfox@users.sourceforge.net
-Version: 1.0.1
+Version: 1.0.2
 License: GNU GPL Version 2
 </pre>
 
@@ -24,7 +24,7 @@ As a client programmer, create a new instance of _AntSystem_ in your code passin
 
 Utilises [JSON Simple](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar) [[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)] for topology input parsing.
 
-Developed with Oracle Java 17.0.2.
+Developed with Oracle Java 17.0.4.
 
 
 ## Related work
@@ -38,6 +38,7 @@ Developed with Oracle Java 17.0.2.
 ## Changelog
 
 <pre>
+1.0.2    2022-08-XX    Fix directional graph structure.
 1.0.1    2022-05-08    Minor fixes.
 1.0      2022-05-07    Initial public release.
 </pre>
