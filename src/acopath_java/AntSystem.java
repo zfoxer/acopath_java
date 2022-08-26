@@ -135,9 +135,9 @@ public class AntSystem
      */
     private double[][] createPheroTopo()
     {
-        double[][] edge2phero = new double[nodes.size()][nodes.size()];
-        for(int i = 0; i < nodes.size(); ++i)
-            for(int j = 0; j < nodes.size(); ++j)
+        double[][] edge2phero = new double[((Integer)((TreeSet)nodes).last()) + 1][((Integer)((TreeSet)nodes).last()) + 1];
+        for(int i = 0; i < ((Integer)((TreeSet)nodes).last()) + 1; ++i)
+            for(int j = 0; j < ((Integer)((TreeSet)nodes).last()) + 1; ++j)
                 edge2phero[i][j] = NO_PHEROMONE;
 
         Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
@@ -329,8 +329,8 @@ public class AntSystem
     private void updateTrails(Map<Vector<Integer>, Integer> evalPaths, double[][] edge2phero)
     {
         // Evaporate existing pheromone levels
-        for(int i = 0; i < nodes.size(); ++i)
-            for(int j = 0; j < nodes.size(); ++j)
+        for(int i = 0; i < ((Integer)((TreeSet)nodes).last()) + 1; ++i)
+            for(int j = 0; j < ((Integer)((TreeSet)nodes).last()) + 1; ++j)
                 if(edge2phero[i][j] != NO_PHEROMONE)
                     edge2phero[i][j] *= (1 - EVAPORATE_PER);
 
